@@ -3,7 +3,7 @@
     "version": "0.1",
     "description": "Alternative to the bookmarklet which doesn't work because (a) server is down and (b) content security policy from chrome blocks it.",
     "host_permissions": [ "https://ubcgrades.com/*"],
-    "permissions": ["activeTab", "scripting", "declarativeContent","storage"],
+    "permissions": ["activeTab", "scripting"],
     "background": {
       "service_worker": "background.js"
     },
