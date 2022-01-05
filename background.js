@@ -142,6 +142,7 @@ function main() {
                     let obj = data ? JSON.parse(data) : {};
                     const cellCourseName = iframe.getElementById(courseList[i]);
                     cellCourseName.innerText = obj.course_title;
+                    cellCourseName.contentEditable = 'true';
                 })
                 .catch(function (error) {
                     console.log(error);
