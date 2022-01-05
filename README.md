@@ -1,3 +1,5 @@
+ ### UBC Transcript Chrome Extension
+ 
  ## Changelog 
  -  Made some modifications to convert js bookmarklet to a chrome extension
  -  Fixed CORS error (see top of background.js) preventing GET requests from both in console and bookmarklet to be run
@@ -26,7 +28,7 @@ It does this in several ways:
 
 ## Instructions
 
-1a. Install extension (insert link here).
+1a. Install chrome extension ([link here](https://chrome.google.com/webstore/detail/ubc-transcript/kcpilaggggglnjckpcckpngnikfceonn?hl=en&authuser=0)).
 
 1b. Pull the repo and install unpacked by following [the steps here](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/). The repo is already unzipped.
 
