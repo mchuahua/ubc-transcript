@@ -49,13 +49,13 @@ function main() {
         // remove calculator and semester navigator
         ["#calculator_title", "#calculator_title_text", ".ui-tabs-nav"].forEach(quickReplace);
 
-
         // space things out a bit better
         iframe.querySelector("h1").style = "margin:10px 0 -20px 70px;";
         iframe.querySelector("#header-invisible img").style = "margin-bottom: 15px;";
 
         // center table and set to width of UBC header image
         iframe.querySelector("#tabs").style = "margin: 0px auto; width:800px";
+
     }
 
     function removeUselessCols() {
@@ -65,29 +65,38 @@ function main() {
         const tableRows = tableBody.children;
         let courseList = [];
 
+        // Keep standing col and % grade, remove section col
         const removeNoGradeRow = 1;
         const removeSectionColumn = 1;
-        const removeStandingColumn = 1;
+        const removeStandingColumn = 0;
 
+        // Hardcoded col variables
         const COL_INDEX_RETRIEVAL = Object.freeze({
             COURSE_CODE: 0,
             LETTER_GRADE: 3,
+            SESSION: 4,
+            STANDING: 10,
         });
         const COL_INDEX_REMOVAL = Object.freeze({
             SECTION: 1,
             STANDING: 10,
         });
+        
+        // For sectioning the sessions to more closely match official transcript
+        var sess_curr = "";
+        var sess_prev = "";
 
         // Reverse loop so that we can remove rows during iteration
         for (let i = tableRows.length - 1; i >= 0; i--) {
             const row = tableRows[i];
 
-            // If there is no letter grade than remove the row and move to the next iteration!
-            const cellLetterGrade =
-                row.children[COL_INDEX_RETRIEVAL.LETTER_GRADE]
-                ;
+            // If there is no letter grade / standing then remove the row and move to the next iteration!
+            const cellLetterGrade = row.children[COL_INDEX_RETRIEVAL.LETTER_GRADE];
             const letterGrade = cellLetterGrade.innerText;
-            if (removeNoGradeRow && letterGrade === "") {
+            const standing = row.children[COL_INDEX_RETRIEVAL.STANDING].innerText;
+            sess_curr = row.children[COL_INDEX_RETRIEVAL.SESSION].innerText;
+
+            if (removeNoGradeRow && letterGrade === "" && standing === "") {
                 tableBody.removeChild(row);
                 continue;
             }
@@ -119,6 +128,12 @@ function main() {
                 cellCourseName.id = courseCode;
                 cellCourseName.classList.add("listRow");
             }
+
+            if ((i != 0 || i != tableRows.length - 1) && sess_prev !== sess_curr){
+                row.style = "border-bottom: #C0C0C0 2px solid";
+            }
+
+            sess_prev = sess_curr;
         }
 
         return courseList;
