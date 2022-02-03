@@ -1,6 +1,3 @@
-
-
-
 // To bypass CORS policy as of Chrome 85 or something: https://stackoverflow.com/questions/55214828/how-to-stop-corb-from-blocking-requests-to-data-resources-that-respond-with-cors/55215898#55215898
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     fetch(request.input, request.init).then(function (response) {
@@ -19,7 +16,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 
 function main() {
-
     // Replace all invocations of fetch with fetchResource
     function fetchResource(input, init) {
         return new Promise((resolve, reject) => {
@@ -81,7 +77,7 @@ function main() {
             SECTION: 1,
             STANDING: 10,
         });
-        
+
         // For sectioning the sessions to more closely match official transcript
         var sess_curr = "";
         var sess_prev = "";
@@ -107,7 +103,10 @@ function main() {
             const courseCode = cellCourseCode.innerText;
             // If statement is for getting rid of fluff
             if (courseCode !== "" && courseCode !== "Course") {
-                courseList.push(courseCode);
+                courseList.push({
+                    "course": courseCode,
+                    "session": sess_curr
+                });
             }
 
             // Remove useless columns
@@ -125,7 +124,8 @@ function main() {
                 cellCourseName.innerText = "Course Name";
                 cellCourseName.classList.add("listHeader");
             } else {
-                cellCourseName.id = courseCode;
+                // Remove non-breaking spaces in id
+                cellCourseName.id = courseCode.replaceAll("\xa0", " ");
                 cellCourseName.classList.add("listRow");
             }
 
@@ -139,37 +139,49 @@ function main() {
         return courseList;
     }
 
+    async function getCourseName(courseCode, session, retries=0) {
+        const iframe = document.querySelector("#iframe-main").contentWindow.document;
+        const GRADES_API_URL = "https://ubcgrades.com/api/v2/grades/UBCV";
+        const STATISTICS_API_URL = "https://ubcgrades.com/api/v2/course-statistics/UBCV";
+        var completeURL;
+
+        if (retries <= 1) {
+            completeURL = GRADES_API_URL + '/' + session + '/' + courseCode[0] + '/' + courseCode[1] + '/OVERALL';
+        } else if (retries == 2)  {
+            console.log("Warning: " + courseCode + " does not seem to have a grade distribution, falling back to using course statistics");
+            completeURL = STATISTICS_API_URL + '/' + courseCode[0] + '/' + courseCode[1];
+        } else {
+            console.log("Error: Course name for " + courseCode + " not found");
+            return;
+        }
+
+        const response = await fetchResource(completeURL, { method: "GET", });
+        const data = await response.text();
+        let obj = data ? await JSON.parse(data) : {}
+        console.log(completeURL);
+        console.log(data);
+        if (obj.error == "Not Found") {
+            var sess_year = parseInt(session.slice(0, 4));
+            var sess_season = session.slice(-1);
+            var sess_last_year = (sess_year - 1).toString() + sess_season;
+            console.log("Error: data for " + courseCode + " during " + session + " unavailable, trying " + sess_last_year);
+            getCourseName(courseCode, sess_last_year, retries + 1);
+            return;
+        }
+
+        const cellCourseName = iframe.getElementById(courseCode.join(" "));
+        cellCourseName.innerText = obj.course_title;
+        cellCourseName.contentEditable = 'true';
+    }
+
     function populateCourseNames(courseList) {
         const iframe = document.querySelector("#iframe-main").contentWindow.document;
-        const API_URL = "https://ubcgrades.com/api/v2/course-statistics/UBCV";
-        let error_logging = 0;
 
         for (let i = 0; i < courseList.length; i++) {
-            let courseCode = courseList[i].split(/\s+/);
-            let completeURL = API_URL + '/' + courseCode[0] + '/' + courseCode[1];
+            let session = courseList[i]["session"];
+            let courseCode = courseList[i]["course"].split(/\s+/);
 
-            // Replaced fetch with fetchResource, see line 162 for info
-            fetchResource(completeURL, { method: "GET", })
-                .then(response => {
-                    return response.text()
-                })
-                .then((data) => {
-                    let obj = data ? JSON.parse(data) : {};
-                    const cellCourseName = iframe.getElementById(courseList[i]);
-                    cellCourseName.innerText = obj.course_title;
-                    cellCourseName.contentEditable = 'true';
-                })
-                .catch(function (error) {
-                    console.log(error);
-                    error_logging = 1;
-                });
-
-            if (error_logging) {
-                alert(`
-                    Something went wrong contacting ubc-grades server? 
-                    `);
-                break;
-            }
+            getCourseName(courseCode, session);
         }
     }
 

@@ -1,6 +1,6 @@
 {
     "name": "UBC Transcript",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "Alternative to the bookmarklet which doesn't work because (a) server is down and (b) content security policy from chrome blocks it.",
     "host_permissions": [ "https://ubcgrades.com/*"],
     "permissions": ["activeTab", "scripting"],
@@ -14,8 +14,8 @@
         "48": "images/santa_48.png",
         "128": "images/santa_128.png"
       },
-      "default_title": "UBC SSC Transcript"  
+      "default_title": "UBC SSC Transcript"
     },
-    
+
     "manifest_version": 3
   }
