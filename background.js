@@ -53,7 +53,7 @@ function main() {
         iframe.querySelector("#tabs").style = "margin: 0px auto; width:800px";
 
     }
-
+    var val_arr = [];
     function removeUselessCols() {
         const iframe = document.querySelector("#iframe-main").contentWindow.document;
         const tableElement = iframe.querySelector("#allSessionsGrades");
@@ -83,6 +83,7 @@ function main() {
         var sess_prev = "";
 
         // Reverse loop so that we can remove rows during iteration
+        
         for (let i = tableRows.length - 1; i >= 0; i--) {
             const row = tableRows[i];
 
@@ -127,6 +128,7 @@ function main() {
                 // Remove non-breaking spaces in id. Add row number as prefix to prevent same ID if same course is taken multiple times.
                 cellCourseName.id = i + courseCode.replaceAll("\xa0", " ");
                 cellCourseName.classList.add("listRow");
+                val_arr.push(cellCourseName.id);
                 console.log(cellCourseName);
             }
 
@@ -150,7 +152,7 @@ function main() {
 
         // Check to see if already called in hashmap. So we don't need to do another API call
         if (map.has(courseCode.join(""))){
-            const cellCourseName = iframe.getElementById(row + courseCode.join(" "));
+            const cellCourseName = iframe.getElementById(val_arr[row]);
             cellCourseName.innerText = map.get(courseCode[0]+courseCode[1]);
             cellCourseName.contentEditable = 'true';
             console.log("Repeated course! Getting from local repo");
@@ -176,7 +178,8 @@ function main() {
                 getCourseName(courseCode, row, campus);
             }
             console.log(row + courseCode.join(" "));
-            const cellCourseName = iframe.getElementById(row + courseCode.join(" "));
+            console.log(val_arr[row]);
+            const cellCourseName = iframe.getElementById(val_arr[row]);
             cellCourseName.innerText = obj.course_title;
             cellCourseName.contentEditable = 'true';
             map.set(courseCode.join(''), obj.course_title);
@@ -190,7 +193,7 @@ function main() {
         for (let i = 0; i < courseList.length; i++) {
             let courseCode = courseList[courseList.length-i-1]["course"].split(/\s+/);
             // Add 2 to account for header's unique ID
-            getCourseName(courseCode, i+2);
+            getCourseName(courseCode, i);
         }
         console.log(map);
     }
