@@ -174,7 +174,7 @@ function main() {
                 console.log("Course name for " + courseCode + " not found in campus UBCV. Trying UBCO");
                 getCourseName(courseCode, row, campus);
             }
-
+            console.log(row + courseCode.join(" "));
             const cellCourseName = iframe.getElementById(row + courseCode.join(" "));
             cellCourseName.innerText = obj.course_title;
             cellCourseName.contentEditable = 'true';
