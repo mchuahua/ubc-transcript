@@ -193,7 +193,7 @@ function main() {
         for (let i = 0; i < courseList.length; i++) {
             let courseCode = courseList[courseList.length-i-1]["course"].split(/\s+/);
             // Add 2 to account for header's unique ID
-            getCourseName(courseCode, i);
+            getCourseName(courseCode, courseList.length-i-1);
         }
         console.log(map);
     }
