@@ -127,6 +127,7 @@ function main() {
                 // Remove non-breaking spaces in id. Add row number as prefix to prevent same ID if same course is taken multiple times.
                 cellCourseName.id = i + courseCode.replaceAll("\xa0", " ");
                 cellCourseName.classList.add("listRow");
+                console.log(cellCourseName);
             }
 
             if ((i != 0 || i != tableRows.length - 1) && sess_prev !== sess_curr){
@@ -185,7 +186,7 @@ function main() {
 
     function populateCourseNames(courseList) {
         const iframe = document.querySelector("#iframe-main").contentWindow.document;
-
+        console.log(courseList);
         for (let i = 0; i < courseList.length; i++) {
             let courseCode = courseList[courseList.length-i-1]["course"].split(/\s+/);
             // Add 2 to account for header's unique ID
