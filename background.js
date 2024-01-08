@@ -120,7 +120,7 @@ function main() {
 
             let cellCourseName = row.insertCell(1);
             cellCourseName.style.textAlign = "center";
-            if (i === 0) {
+            if (i == 0) {
                 cellCourseName.innerText = "Course Name";
                 cellCourseName.classList.add("listHeader");
             } else {
