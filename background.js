@@ -93,11 +93,6 @@ function main() {
             const standing = row.children[COL_INDEX_RETRIEVAL.STANDING].innerText;
             sess_curr = row.children[COL_INDEX_RETRIEVAL.SESSION].innerText;
 
-            if (removeNoGradeRow && letterGrade === "" && standing === "") {
-                tableBody.removeChild(row);
-                continue;
-            }
-
             // Collect course names to send via HTTP request
             // Add a new column for the course name
             const cellCourseCode = row.children[COL_INDEX_RETRIEVAL.COURSE_CODE]
